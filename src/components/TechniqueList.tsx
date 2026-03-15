@@ -10,7 +10,7 @@ interface TechniqueListProps {
   enabledTechniqueIds?: string[];
 }
 
-export function TechniqueList({ onSelect, isAdmin, onOpenAdminDecks, enabledTechniqueIds }: TechniqueListProps) {
+export function TechniqueList({ onSelect, isAdmin, onOpenAdminDecks, onOpenDashboard, enabledTechniqueIds }: TechniqueListProps) {
   const visibleTechniques = isAdmin
     ? TECHNIQUES
     : TECHNIQUES.filter(t => !enabledTechniqueIds || enabledTechniqueIds.includes(t.id));
