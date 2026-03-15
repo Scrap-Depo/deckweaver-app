@@ -108,7 +108,7 @@ export function GuidedSession({ deck, technique, onBack }: GuidedSessionProps) {
         if (c.isFacedown) {
           return { ...c, isFacedown: false };
         } else {
-          setTableCardZoom({ url: c.url, cardObj: c, isDynamicTable: true });
+          setFocusCard({ cardObj: c, isDynamicTable: true });
         }
       }
       return c;
