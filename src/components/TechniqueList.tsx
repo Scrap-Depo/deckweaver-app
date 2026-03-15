@@ -1,4 +1,4 @@
-import { Database } from 'lucide-react';
+import { Database, BarChart3 } from 'lucide-react';
 import { TECHNIQUES } from '@/data/techniques';
 import type { Technique } from '@/types/mac';
 
@@ -6,6 +6,7 @@ interface TechniqueListProps {
   onSelect: (tech: Technique) => void;
   isAdmin: boolean;
   onOpenAdminDecks: () => void;
+  onOpenDashboard?: () => void;
   enabledTechniqueIds?: string[];
 }
 
