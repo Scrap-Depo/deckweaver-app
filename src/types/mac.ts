@@ -28,7 +28,7 @@ export interface Slot {
 export interface Technique {
   id: string;
   name: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<any>;
   desc: string;
   type: 'dynamic' | 'fixed';
   sequential?: boolean;
