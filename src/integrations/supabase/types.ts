@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics_deck_usage: {
+        Row: {
+          created_at: string
+          deck_name: string
+          id: string
+          session_id: string
+          technique_name: string
+        }
+        Insert: {
+          created_at?: string
+          deck_name: string
+          id?: string
+          session_id: string
+          technique_name: string
+        }
+        Update: {
+          created_at?: string
+          deck_name?: string
+          id?: string
+          session_id?: string
+          technique_name?: string
+        }
+        Relationships: []
+      }
+      analytics_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          session_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_id?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
