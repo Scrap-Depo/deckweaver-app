@@ -1,4 +1,4 @@
-import { Database } from 'lucide-react';
+import { Database, BarChart3 } from 'lucide-react';
 import { TECHNIQUES } from '@/data/techniques';
 import type { Technique } from '@/types/mac';
 
@@ -6,10 +6,11 @@ interface TechniqueListProps {
   onSelect: (tech: Technique) => void;
   isAdmin: boolean;
   onOpenAdminDecks: () => void;
+  onOpenDashboard?: () => void;
   enabledTechniqueIds?: string[];
 }
 
-export function TechniqueList({ onSelect, isAdmin, onOpenAdminDecks, enabledTechniqueIds }: TechniqueListProps) {
+export function TechniqueList({ onSelect, isAdmin, onOpenAdminDecks, onOpenDashboard, enabledTechniqueIds }: TechniqueListProps) {
   const visibleTechniques = isAdmin
     ? TECHNIQUES
     : TECHNIQUES.filter(t => !enabledTechniqueIds || enabledTechniqueIds.includes(t.id));
