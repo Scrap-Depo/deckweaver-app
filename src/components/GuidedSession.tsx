@@ -108,7 +108,7 @@ export function GuidedSession({ deck, technique, onBack }: GuidedSessionProps) {
         if (c.isFacedown) {
           return { ...c, isFacedown: false };
         } else {
-          setTableCardZoom({ url: c.url, cardObj: c, isDynamicTable: true });
+          setFocusCard({ cardObj: c, isDynamicTable: true });
         }
       }
       return c;
@@ -171,7 +171,8 @@ export function GuidedSession({ deck, technique, onBack }: GuidedSessionProps) {
       return;
     }
     if (!assignedCard) return;
-    setTableCardZoom({ url: assignedCard.url, cardObj: assignedCard, slotId: slot.id });
+    const slotData = technique.slots?.find(s => s.id === slot.id);
+    setFocusCard({ cardObj: assignedCard, slotId: slot.id, slotLabel: slotData?.label });
   };
 
   // --- RENDER BACKGROUNDS ---
