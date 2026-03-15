@@ -171,7 +171,8 @@ export function GuidedSession({ deck, technique, onBack }: GuidedSessionProps) {
       return;
     }
     if (!assignedCard) return;
-    setTableCardZoom({ url: assignedCard.url, cardObj: assignedCard, slotId: slot.id });
+    const slotData = technique.slots?.find(s => s.id === slot.id);
+    setFocusCard({ cardObj: assignedCard, slotId: slot.id, slotLabel: slotData?.label });
   };
 
   // --- RENDER BACKGROUNDS ---
