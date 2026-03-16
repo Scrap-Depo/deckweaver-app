@@ -32,5 +32,5 @@ export async function loadDecksFromCloud(): Promise<Deck[]> {
 
 export async function loadDeckCards(deckId: string): Promise<DeckCard[]> {
   const { data } = await supabase.from("deck_cards" as any).select("*").eq("deck_id", deckId).order("order");
-  return (data || []) as DeckCard[];
+  return (data || []) as unknown as DeckCard[];
 }

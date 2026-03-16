@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Plus, GripHorizontal, Settings } from 'lucide-react';
-import { saveDeckToDB, MAX_DECKS } from '@/lib/db';
+import { saveDeckToCloud } from '@/lib/adminAuth';
+const MAX_DECKS = 6;
 import type { Deck, Technique } from '@/types/mac';
 
 interface DeckListProps {

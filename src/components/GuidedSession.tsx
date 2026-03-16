@@ -225,6 +225,15 @@ export function GuidedSession({ deck, technique, onBack }: GuidedSessionProps) {
     if (technique.bgRender === 'timeline') {
       return <div className="absolute top-[35%] left-10 right-10 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent pointer-events-none shadow-glow-primary z-0" />;
     }
+    if (technique.bgRender === 'pyramid') {
+      return (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          <svg className="w-full h-full opacity-40 drop-shadow-2xl" preserveAspectRatio="none" viewBox="0 0 100 100">
+            <polygon points="50,10 95,90 5,90" fill="hsl(var(--primary) / 0.05)" stroke="hsl(var(--primary) / 0.3)" strokeWidth="0.5" />
+          </svg>
+        </div>
+      );
+    }
     if (technique.bgRender === 'versus') {
       return (
         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-90 z-0">
