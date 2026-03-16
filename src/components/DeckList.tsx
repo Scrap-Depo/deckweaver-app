@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Plus, GripHorizontal, Settings } from 'lucide-react';
-import { saveDeckToDB, MAX_DECKS } from '@/lib/db';
+import { saveDeckToCloud } from '@/lib/adminAuth';
+const MAX_DECKS = 6;
 import type { Deck, Technique } from '@/types/mac';
 
 interface DeckListProps {
@@ -49,7 +50,7 @@ export function DeckList({ decks, setDecks, isAdmin, mode, onAddEmpty, onOpen, o
     newDecks.splice(targetIndex, 0, removed);
     const reordered = newDecks.map((d, index) => ({ ...d, order: index }));
     setDecks(reordered);
-    for (const deck of reordered) await saveDeckToDB(deck);
+    for (const deck of reordered) await saveDeckToCloud(deck);
   };
 
   return (

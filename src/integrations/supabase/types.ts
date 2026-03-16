@@ -59,6 +59,65 @@ export type Database = {
         }
         Relationships: []
       }
+      deck_cards: {
+        Row: {
+          created_at: string
+          deck_id: string
+          id: string
+          image_url: string
+          order: number
+        }
+        Insert: {
+          created_at?: string
+          deck_id: string
+          id?: string
+          image_url: string
+          order?: number
+        }
+        Update: {
+          created_at?: string
+          deck_id?: string
+          id?: string
+          image_url?: string
+          order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deck_cards_deck_id_fkey"
+            columns: ["deck_id"]
+            isOneToOne: false
+            referencedRelation: "decks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      decks: {
+        Row: {
+          card_back_url: string | null
+          created_at: string
+          enabled_techniques: Json | null
+          id: string
+          name: string
+          order: number
+        }
+        Insert: {
+          card_back_url?: string | null
+          created_at?: string
+          enabled_techniques?: Json | null
+          id: string
+          name?: string
+          order?: number
+        }
+        Update: {
+          card_back_url?: string | null
+          created_at?: string
+          enabled_techniques?: Json | null
+          id?: string
+          name?: string
+          order?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
