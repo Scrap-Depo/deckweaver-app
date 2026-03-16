@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Shield } from 'lucide-react';
-import { getAllDecksFromDB, saveDeckToDB, deleteDeckFromDB } from '@/lib/db';
+import { loadDecksFromCloud } from '@/lib/deckService';
 import { trackSession, trackDeckUsage } from '@/lib/analytics';
-import { getAdminToken, verifyAdminToken, clearAdminToken } from '@/lib/adminAuth';
+import { getAdminToken, verifyAdminToken, clearAdminToken, saveDeckToCloud, deleteDeckFromCloud } from '@/lib/adminAuth';
 import { TechniqueList } from '@/components/TechniqueList';
 import { DeckList } from '@/components/DeckList';
 import { DeckManager } from '@/components/DeckManager';
@@ -21,25 +21,31 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const loadDecks = async () => {
+    try {
+      const cloudDecks = await loadDecksFromCloud();
+      setDecks(cloudDecks.sort((a, b) => a.order - b.order));
+    } catch (e) {
+      console.error("Ошибка загрузки колод:", e);
+    }
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        const storedDecks = await getAllDecksFromDB();
-        setDecks(storedDecks.sort((a, b) => a.order - b.order));
-        // Check if already logged in as admin
+        await loadDecks();
         if (getAdminToken()) {
           const valid = await verifyAdminToken();
           setIsAdmin(valid);
           if (!valid) clearAdminToken();
         }
       } catch (e) {
-        console.error("Ошибка загрузки БД:", e);
+        console.error("Ошибка загрузки:", e);
       } finally {
         setIsLoading(false);
       }
     };
     loadData();
-    // Track anonymous session
     trackSession();
   }, []);
 
@@ -55,17 +61,17 @@ const Index = () => {
       order: decks.length,
       enabledTechniques: []
     };
-    await saveDeckToDB(newDeck);
-    setDecks([...decks, newDeck]);
+    await saveDeckToCloud(newDeck);
+    await loadDecks();
   };
 
   const updateDeck = async (updatedDeck: Deck) => {
-    await saveDeckToDB(updatedDeck);
+    await saveDeckToCloud(updatedDeck);
     setDecks(decks.map(d => d.id === updatedDeck.id ? updatedDeck : d));
   };
 
   const handleDeleteDeck = async (id: string) => {
-    await deleteDeckFromDB(id);
+    await deleteDeckFromCloud(id);
     setDecks(decks.filter(d => d.id !== id));
     setCurrentDeckId(null);
     setViewMode(viewMode === 'manage-deck' ? 'admin-decks' : 'techniques');
@@ -109,7 +115,6 @@ const Index = () => {
 
   return (
     <div className="size-full min-h-screen font-sans text-foreground selection:bg-primary/30 relative overflow-x-hidden">
-      {/* Admin button */}
       {viewMode !== 'admin-login' && viewMode !== 'admin-dashboard' && (
         <button
           onClick={handleAdminClick}
@@ -174,7 +179,7 @@ const Index = () => {
           deck={currentDeck}
           onUpdate={updateDeck}
           onDelete={() => handleDeleteDeck(currentDeck.id)}
-          onBack={() => setViewMode('admin-decks')}
+          onBack={() => { loadDecks(); setViewMode('admin-decks'); }}
         />
       )}
 

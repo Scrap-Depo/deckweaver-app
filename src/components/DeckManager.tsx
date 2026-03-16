@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { ArrowLeft, Trash2, Plus } from 'lucide-react';
-import { fileToBase64 } from '@/lib/db';
+import { useState, useEffect } from 'react';
+import { ArrowLeft, Trash2, Plus, Loader2 } from 'lucide-react';
+import { uploadImageToCloud, deleteCardFromCloud } from '@/lib/adminAuth';
+import { loadDeckCards } from '@/lib/deckService';
 import { TECHNIQUES } from '@/data/techniques';
 import type { Deck } from '@/types/mac';
 
@@ -11,8 +12,21 @@ interface DeckManagerProps {
   onBack: () => void;
 }
 
+interface CardRecord {
+  id: string;
+  deck_id: string;
+  image_url: string;
+  order: number;
+}
+
 export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerProps) {
   const [name, setName] = useState(deck.name);
+  const [uploading, setUploading] = useState(false);
+  const [cards, setCards] = useState<CardRecord[]>([]);
+
+  useEffect(() => {
+    loadDeckCards(deck.id).then(setCards);
+  }, [deck.id]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -22,20 +36,38 @@ export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerPro
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
-    const base64Images = await Promise.all(files.map(f => fileToBase64(f)));
-    onUpdate({ ...deck, images: [...deck.images, ...base64Images] });
+    setUploading(true);
+    const newImages: string[] = [];
+    for (const file of files) {
+      const base64 = await fileToBase64(file);
+      const url = await uploadImageToCloud(deck.id, base64, file.name, false);
+      if (url) newImages.push(url);
+    }
+    if (newImages.length > 0) {
+      onUpdate({ ...deck, images: [...deck.images, ...newImages] });
+      const updatedCards = await loadDeckCards(deck.id);
+      setCards(updatedCards);
+    }
+    setUploading(false);
   };
 
   const handleCardBackUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUploading(true);
     const base64 = await fileToBase64(file);
-    onUpdate({ ...deck, cardBack: base64 });
+    const url = await uploadImageToCloud(deck.id, base64, file.name, true);
+    if (url) onUpdate({ ...deck, cardBack: url });
+    setUploading(false);
   };
 
-  const handleDeleteCard = (index: number) => {
+  const handleDeleteCard = async (index: number) => {
+    const card = cards[index];
+    if (!card) return;
+    await deleteCardFromCloud(card.id, card.image_url);
     const newImages = deck.images.filter((_, i) => i !== index);
     onUpdate({ ...deck, images: newImages });
+    setCards(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleTechniqueToggle = (techId: string) => {
@@ -57,9 +89,17 @@ export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerPro
         </button>
       </div>
 
+      {uploading && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur flex items-center justify-center">
+          <div className="flex items-center gap-3 text-foreground bg-card px-8 py-4 rounded-2xl shadow-2xl border border-border/50">
+            <Loader2 size={24} className="animate-spin text-primary" />
+            <span className="font-medium">Загрузка изображений...</span>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-6">
-          {/* Name */}
           <div className="glass-surface p-6">
             <label className="block text-sm font-medium text-muted-foreground mb-2">Название колоды</label>
             <input
@@ -70,7 +110,6 @@ export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerPro
             />
           </div>
 
-          {/* Card back */}
           <div className="glass-surface p-6">
             <h3 className="text-sm font-medium text-muted-foreground mb-4">Рубашка карт</h3>
             <div className="aspect-[2/3] bg-background/50 rounded-2xl border-2 border-dashed border-border/50 relative overflow-hidden flex items-center justify-center group">
@@ -94,7 +133,6 @@ export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerPro
             </div>
           </div>
 
-          {/* Technique access */}
           <div className="glass-surface p-6">
             <h3 className="text-sm font-medium text-muted-foreground mb-4">Доступность для техник</h3>
             <p className="text-xs text-muted-foreground/60 mb-3">Если ничего не выбрано — доступна для всех</p>
@@ -114,7 +152,6 @@ export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerPro
           </div>
         </div>
 
-        {/* Card images */}
         <div className="lg:col-span-2">
           <div className="glass-surface p-6 min-h-[500px]">
             <div className="flex justify-between items-center mb-6">
@@ -139,4 +176,13 @@ export function DeckManager({ deck, onUpdate, onDelete, onBack }: DeckManagerPro
       </div>
     </div>
   );
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 }

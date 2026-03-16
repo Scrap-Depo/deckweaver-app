@@ -1,4 +1,4 @@
-import { LayoutGrid, Waypoints, Target, Activity, Users } from 'lucide-react';
+import { LayoutGrid, Waypoints, Target, Activity, Users, Triangle } from 'lucide-react';
 import type { Technique } from '@/types/mac';
 
 export const TECHNIQUES: Technique[] = [
@@ -38,6 +38,51 @@ export const TECHNIQUES: Technique[] = [
       "Какие детали привлекли внимание?",
       "Какие эмоции или телесные ощущения вызывает это изображение?",
       "Что эта карта говорит о вашем запросе?"
+    ]
+  },
+  {
+    id: 'pyramid',
+    name: 'Пирамида логических уровней',
+    icon: Triangle,
+    desc: 'Исследование цели по уровням Роберта Дилтса: от окружения до миссии',
+    type: 'fixed',
+    sequential: true,
+    cardScale: 0.95,
+    bgRender: 'pyramid',
+    slots: [
+      {
+        id: 'p0', label: 'Запрос', x: 50, y: 25, blind: false, labelPos: 'top',
+        tablePrompts: ["Что ты хочешь изменить в своей жизни?"]
+      },
+      {
+        id: 'p1', label: '1.\u00A0Окружение', x: 12, y: 75, blind: false, labelPos: 'top',
+        tablePrompts: ["Что происходит в твоем окружении?"]
+      },
+      {
+        id: 'p2', label: '2.\u00A0Действия', x: 27.2, y: 75, blind: false, labelPos: 'top',
+        tablePrompts: ["Что ты уже делаешь, чтобы достигнуть цель?", "Что еще не делаешь, но можешь делать?"]
+      },
+      {
+        id: 'p3', label: '3.\u00A0Способности', x: 42.4, y: 75, blind: false, labelPos: 'top',
+        tablePrompts: ["Какие ваши способности или возможности помогут достичь цели?"]
+      },
+      {
+        id: 'p4', label: '4.\u00A0Убеждения', x: 57.6, y: 75, blind: false, labelPos: 'top',
+        tablePrompts: ["Какие убеждения тебя поддерживают на пути к цель?", "Почему важно достичь этой Цели?"]
+      },
+      {
+        id: 'p5', label: '5.\u00A0Идентичность', x: 72.8, y: 75, blind: false, labelPos: 'top',
+        tablePrompts: ["Кем ты себя видишь, когда достигнешь цели?"]
+      },
+      {
+        id: 'p6', label: '6.\u00A0Миссия', x: 88, y: 75, blind: false, labelPos: 'top',
+        tablePrompts: ["Ради чего большего нужна эта цель?"]
+      }
+    ],
+    prompts: [
+      "Опишите факты, которые вы видите на карте.",
+      "Как этот образ метафорически отвечает на вопрос этого уровня?",
+      "Какие скрытые смыслы вы здесь замечаете?"
     ]
   },
   {
