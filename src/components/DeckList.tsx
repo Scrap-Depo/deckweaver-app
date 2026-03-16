@@ -50,7 +50,7 @@ export function DeckList({ decks, setDecks, isAdmin, mode, onAddEmpty, onOpen, o
     newDecks.splice(targetIndex, 0, removed);
     const reordered = newDecks.map((d, index) => ({ ...d, order: index }));
     setDecks(reordered);
-    for (const deck of reordered) await saveDeckToDB(deck);
+    for (const deck of reordered) await saveDeckToCloud(deck);
   };
 
   return (
